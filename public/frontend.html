@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Polling Tasks</title>
+</head>
+<body id="app">
+  <p><strong>{{ counter }}</strong></p>
+  <p v-for="task in tasks">
+    <input type="checkbox" v-model="task.completed" v-bind:true-value="1" v-bind:false-value="0" v-on:change="updateTask(task)"><strong>{{ task.title }}:</strong> {{ task.description }}
+  </p>
+  <form action="http://polling.local/create" method="post" accept-charset="utf-8" v-on:submit.prevent="submitForm">
+    <input type="text" v-model="newTask.title" name="title" value="" placeholder="Title">
+    <input type="text" v-model="newTask.description" name="description" value="" placeholder="Description">
+    <label for="completed">
+      <input type="checkbox" id="completed" v-model="newTask.completed" name="completed" v-bind:true-value="1" v-bind:false-value="0">Completed
+    </label>
+    <input type="submit" name="submit" value="Create Task">
+  </form>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    function rawGet() {
+      // return the promise we made
+      return fetch('http://polling.local/all')
+      .then(function(response) {
+        return response.json();
+      }).then(function(res) {
+        // bind the data to our app
+        app.tasks = res;
+        return;
+      }).then(function() {
+        app.counter += 1;
+        return;
+      });
+    }
+    function getData(fn) {
+      // higher level wrapper
+      rawGet()
+      .then(fn)
+      .catch(function(err) {
+        console.log(err);
+      });
+    }
+    function poll() {
+      // timer function
+      // maybe requestIdleCallback?
+      setTimeout(function() {
+        getData(poll);
+      }, 2000);
+    }
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tasks: [],
+        counter: 0,
+        newTask: {
+          title: '',
+          description: '',
+          completed: false,
+        }
+      },
+      ready: function() {
+        getData(poll);
+      },
+      methods: {
+        updateTask: function(target) {
+          var self = this;
+          fetch('http://polling.local/task/' + target.id, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Charset': 'utf-8'
+            },
+            body: JSON.stringify(target)
+          }).then(function(response) {
+            return response.json();
+          }).then(function(task) {
+            target = task;
+          }).catch(function(err) {
+            console.error(err);
+          });
+        },
+        submitForm: function() {
+          // nice form wrapper trick
+          var self = this;
+          var form = event.target;
+          fetch(form.action, {
+            method: form.method,
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Charset': 'utf-8'
+            },
+            body: JSON.stringify(this.newTask)
+          }).then(function(response) {
+            return response.json();
+          }).then(function(task) {
+            self.tasks.push(task);
+          }).then(function() {
+            form.reset();
+          }).catch(function(err) {
+            console.error(err);
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

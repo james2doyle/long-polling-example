@@ -1,0 +1,12 @@
+APP_ENV=local
+APP_DEBUG=true
+APP_KEY=23oFrIuJQv6KLq1m89woisSRiUlL721G
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_DATABASE=polling
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+
+CACHE_DRIVER=memcached
+QUEUE_DRIVER=sync
