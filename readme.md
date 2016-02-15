@@ -2,7 +2,7 @@
 
 > a demo of how to go about setting up a simple ajax-polling page/feature
 
-[YouTube Demo](https://www.youtube.com/watch?v=ys44OFDHydE)
+[YouTube Demo](https://youtu.be/tp4VOgej1Ho)
 
 #### Uses:
 
