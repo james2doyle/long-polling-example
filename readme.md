@@ -1,6 +1,6 @@
 ## Long Polling Example App
 
-> a demo of how to go about setting up a simple long-polling page/feature
+> a demo of how to go about setting up a simple ajax-polling page/feature
 
 [YouTube Demo](https://www.youtube.com/watch?v=ys44OFDHydE)
 
